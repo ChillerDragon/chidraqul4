@@ -13,6 +13,7 @@ skin="#"
 kill_skin="a"
 block="_"
 render_dist=2
+is_debug=0
 
 function testarea2 {
     read -p "index " tindex
@@ -60,6 +61,33 @@ function GameOver {
     render_dist=20
     CreateWorld
     GameTick
+}
+
+function ChatCmd {
+    read -p "command: " cmd
+    if [[ "$cmd" == "debug 1" ]]
+    then
+        is_debug=1
+    elif [[ "$cmd" == "debug 0" ]]
+    then
+        is_debug=0
+    elif [[ "$cmd" == "testarea2" ]]
+    then
+        testarea2
+    elif [[ "$cmd" == "testarea" ]]
+    then
+        testarea
+    elif [[ "$cmd" == "help" ]]
+    then
+        echo "debug 1, debug 0, testarea, testarea2, help, q"
+        ChatCmd
+    elif [[ "$cmd" == "q" ]]
+    then
+        GameTick
+    else
+        echo "unkown command 'q' to quit 'help' to help"
+        ChatCmd
+    fi
 }
 
 function options {
@@ -164,12 +192,13 @@ function PrintFrame2 {
 
     local p2_startX=$((posX - render_dist * 2))
     local p2_startY=$((posY - render_dist))
-    GetTileIndex $p2_fromX $p_fromY
+    #GetTileIndex $p2_fromX $p2_fromY
+    GetTileIndex $p2_startX $p2_startY
     local tile=$((TileIndex))
     local pF_index=$TileIndex
     local pF_index_X=$p2_startX
     local pF_index_Y=$p2_startY
-    local render_tiles=$(((render_dist * 2) * (render_dist * 4)))
+    local render_tiles=$(((render_dist * 2) * (render_dist * 4))) #2:4 colum/row rate to get nice resolution
     local render_sizeX=$((render_dist * 4))
     local render_sizeY=$((render_dist * 2))
 
@@ -181,7 +210,8 @@ function PrintFrame2 {
     for ((i=0;i<=render_tiles;i++)) do
 
 
-
+        #let "pF_index_X++" #there is a X increment needed for the world border to work
+        # but idk how where and how to do it. Maybe here maybe not
         if [ "$tile_counter" -ge "$render_sizeX" ]
         then
             pFrame+="\n"
@@ -194,14 +224,41 @@ function PrintFrame2 {
 
         #   this makes no sense because of 2d many values are out of map effected not only these
         #   pls fix this if you get back to this technique
-        if [[ "$pF_index" -lt 0 ]] #|| "$pF_index" -gt "world_sizeX" ]]
+        if [[ "$pF_index" -lt "0" ]] #|| [[ "$pF_index_X" -gt "world_sizeX" ]]
         then
-        #   pFrame+=" "
+            pFrame+=" "
             let "pF_index = 0"
         fi
+    
+        IsAir=0
+        if [[ "$pF_index_Y" -lt "0" ]] || [[ "$pF_index_Y" -gt "world_sizeY" ]]
+        then
+#            pFrame+=" "
+#            tile_counter=$((tile_counter + 1))
+#            pF_index=$((pF_index + 1))
+#            continue
+            IsAir=1
+        fi
 
+        if [[ "$pF_index_X" -lt "0" ]] #|| [[ "$pF_index_X" -gt "world_sizeX" ]]
+        then
+#            pFrame+=" "
+#            tile_counter=$((tile_counter + 1))
+#            pF_index=$((pF_index + 1)) #2:4 colum/row rate to get nice resolution
+#            continue
+            IsAir=1
+        fi
 
-        pFrame+="${world[$pF_index]}"
+        if [[ "$is_debug" == "1" ]]
+        then
+            pFrame+="i:$pF_index|x:$pF_index_X|y:$pF_index_Y"
+        fi
+        if [[ "$IsAir" == "1" ]]
+        then
+            pFrame+=" "
+        else
+            pFrame+="${world[$pF_index]}"
+        fi
         tile_counter=$((tile_counter + 1))
         pF_index=$((pF_index + 1))
 
@@ -330,18 +387,13 @@ function GameTick {
             stty sane
             clear
             options
+        elif [ "$input" = "t" ]; then
+            stty sane
+            ChatCmd
         elif [ "$input" = "r" ]; then
             stty sane
             clear
             CreateWorld
-        elif [ "$input" = "t" ]; then
-            stty sane
-            clear
-            testarea
-        elif [ "$input" = "z" ]; then
-            stty sane
-            clear
-            testarea2
         elif [ "$input" = "p" ]; then
             if [ "$skin" = "#" ]
             then
