@@ -1,23 +1,157 @@
 #!/bin/bash
-#chidraqul4 made by ChillerDragon
-#all rights reserved (c) Copyrigth to ChillerDragon
-#official code repository https://github.com/ChillerDragon/chidraqul4
+# Copyright 2018 ChillerDragon. All Rights Reserved.
+# Get the full official release at:
+# https://github.com/ChillerDragon/chidraqul4
+
+source render.sh
+source debug.sh
+source world.sh
+source game.sh
+source bullet.sh
+source bot.sh
+source cmd.sh
+source chat.sh
+source gold.sh
+source shield.sh
 
 echo -n -e "\033]0;chidraqul4\007"
 
+LeftHand="_"
+RightHand="_"
+IsLeftHand=0
+IsRightHand=0
 Air="O"
+TotalTicks=0
+gold=0
+bhp=10
+hp=$bhp
+hp_str="[+]"
 posX=0
 posY=0
 spawnX=0
 spawnY=0
-method=0
 skin="#"
 kill_skin="a"
 block="_"
-render_dist=2
+render_dist=6
 is_debug=0
+IsHUD=0
+ShowFullChat=0
+AimDir=1
+aPrevPosTime=()
+aPrevPos=()
+history_len=10
+IsTail=0
+#JUMPS
+IsJump=0
+HasDoubleJump=1
+TilesJumped=0
+MaxJump=4
+IsGrounded=0
+#BULLETS
+aBulletIndex=() #tileindex int
+aBulletDir=()   #-1 and 1
+aBulletAlive=() #bool
+aBulletTick=()  #alive ticks
+AliveBullets=0
+BulletLifetime=20
+#BOTS
+aBotIndex=()
+aBotLastIndex=()
+aBotAlive=()
+MAX_BOTS=10
+botskin="◊"
+BotWalked=0
+BotDir=1
+
+
+function UnsetRightHand {
+    SetRightHand "_"
+    IsRightHand=0
+    SendChat "RECHTS $IsRightHand"
+}
+
+function UnsetLeftHand {
+    SetLeftHand "_"
+    IsLeftHand=0
+}
+
+function SetRightHand {
+    if [[ "$AimDir" == "1" ]]
+    then
+        RightHand="$1"
+        IsRightHand=1
+    else
+        LeftHand="$1"
+        IsLeftHand=1
+    fi
+}
+
+function SetLeftHand {
+    if [[ "$AimDir" == "-1" ]]
+    then
+        RightHand="$1"
+        IsRightHand=1
+    else
+        LeftHand="$1"
+        IsLeftHand=1
+    fi
+}
+
+function AddTail {
+    if [[ "$IsTail" == "1" ]]
+    then
+        world[${aPrevPosTime[0]}]="+"
+        world[${aPrevPosTime[$history_len]}]="_"
+    else
+        world[${aPrevPosTime[0]}]="_"
+    fi
+}
+
+function UpdatePosHistory {
+    local next
+    local i
+    # Time based history
+    for ((i=$history_len;i>0;i--)) do
+        next=$((i - 1))
+        aPrevPosTime[$i]=${aPrevPosTime[$next]}
+    done
+    aPrevPosTime[0]=$1
+    # Change based history
+    if [[ "$1" == "${aPrevPos[0]}" ]]
+    then
+        return
+    fi
+    for ((i=$history_len;i>0;i--)) do
+        next=$((i - 1))
+        aPrevPos[$i]=${aPrevPos[$next]}
+        #printf "${aPrevPos[$i]}[$i] <- ${aPrevPos[$next]}[$next] \n" #debug delete me
+    done
+    aPrevPos[0]=$1
+}
+
+function ShowHistory {
+    local i
+    clear
+    echo "time | change"
+    for ((i=0;i<=history_len;i++)) do
+        echo "[$i] ${aPrevPosTime[$i]} ${aPrevPos[$i]}"
+    done
+
+
+    read -n 1 -s -p ""
+}
+
+function damage {
+    hp=$((hp - 1))
+    if [[ "$hp" == "0" ]]
+    then
+        die
+    fi
+}
 
 function die {
+    hp=$bhp
     spawn
 }
 
@@ -26,36 +160,7 @@ function spawn {
     posY=$spawnY
 }
 
-function testarea2 {
-    read -p "index " tindex
-    clear
-    echo ""
-    echo "-"
-    printf "${world[$tindex]}"
-    echo ""
-    echo "-"
-    echo ""
-    read -n 1 -s -p ""
-    GameTick
-}
-
-function testarea {
-    read -p "x " iks
-    read -p "y " yps
-    clear
-    echo ""
-    echo "-"
-    GetTileIndex $iks $yps
-    printf "${world[$TileIndex]}"
-    echo ""
-    echo "-"
-    echo ""
-    read -n 1 -s -p ""
-    GameTick
-}
-
 function GameOver {
-
     clear
     echo ""
     echo ""
@@ -63,71 +168,17 @@ function GameOver {
     echo ""
     read -n 1 -s -p ""
 
-    posX=0
-    posY=0
-    method=0
+    die
     skin="#"
     kill_skin="a"
     block="_"
-    render_dist=20
     CreateWorld
     GameTick
-}
-
-function ChatCmd {
-    read -p "command: " cmd
-    if [[ "$cmd" == "debug 1" ]]
-    then
-        is_debug=1
-    elif [[ "$cmd" == "debug 0" ]]
-    then
-        is_debug=0
-    elif [[ "$cmd" == "testarea2" ]]
-    then
-        testarea2
-    elif [[ "$cmd" == "testarea" ]]
-    then
-        testarea
-    elif [[ "$cmd" == "help" ]]
-    then
-        echo "debug 1, debug 0, testarea, testarea2, help, q"
-        ChatCmd
-    elif [[ "$cmd" == "q" ]]
-    then
-        GameTick
-    else
-        echo "unkown command 'q' to quit 'help' to help"
-        ChatCmd
-    fi
 }
 
 function options {
     read -p "Renderdistance: " render_dist
     GameTick
-
-    #while true;
-    #do
-    #    sleep 0.01
-    #    clear
-    #    stty -icanon time 0 min 0
-    #    read -s input
-    #
-    #    if [ "$input" = "w" ] && [ $posX -gt 0 ]; then
-    #        posX=$((posX - 1))
-    #    elif [ "$input" = "c" ]; then
-    #        posX=$((posX + 1))
-    #    elif [ "$input" = "q" ]; then
-    #        stty sane
-    #        clear
-    #        GameTick
-    #    elif [ "$input" = "x" ]; then
-    #        stty sane
-    #        clear
-    #        echo "good game."
-    #        exit
-    #       fi
-    #    stty sane
-    #done
 }
 
 function GetHigherIndex_Y {
@@ -153,238 +204,152 @@ function GetLowerIndex_Y {
 function GetTileIndex {
     local paraX=$1
     local paraY=$2
-
     TileIndex=$((world_sizeX * paraY + paraX))
 }
 
-function CreateWorld {
-    echo "creating world..."
-    world_sizeX=200
-    world_sizeY=500
-    world_sizeXm=$((world_sizeX - 1))
-    world_sizeYm=$((world_sizeY - 1))
-    #declare -a world
-
-    world_tiles=$((world_sizeX * world_sizeY - 1))
-
-    for ((i=0;i<=world_tiles;i++)) do
-        world[$i]="_"
-    done
-
-    #add some obstacelz to the world
-    GetTileIndex 10 10
-    world[$TileIndex]="t"
-
-    clear
-}
-
-function PrintWorld {
-    #create world string
-    #if [[ "$i" -eq 100 || "$i" -eq 200 || "$i" -eq 300 || "$i" -eq 400 || "$i" -eq 500 || "$i" -eq 600 || "$i" -eq 700 || "$i" -eq 800 || "$i" -eq 900 || "$i" -eq 1000 || "$i" -eq 1100 ]]
-
-    pWorld=()
-    tile_counter=0
-    #echo "tiles: $world_tiles"
-    for ((i=0;i<=world_tiles;i++)) do
-        if [ "$tile_counter" -ge "$world_sizeX" ]
-        then
-            pWorld+="\n"
-            tile_counter=0
-        fi
-
-        pWorld+="${world[$i]}"
-        tile_counter=$((tile_counter + 1))
-    done
-    printf "$pWorld"
-    echo ""
-}
-
-function PrintFrame2 {
-
-    local p2_startX=$((posX - render_dist * 2))
-    local p2_startY=$((posY - render_dist))
-    #GetTileIndex $p2_fromX $p2_fromY
-    GetTileIndex $p2_startX $p2_startY
-    local tile=$((TileIndex))
-    local pF_index=$TileIndex
-    local pF_index_X=$((p2_startX - 1))
-    local pF_index_Y=$p2_startY
-    local render_tiles=$(((render_dist * 2) * (render_dist * 4))) #2:4 colum/row rate to get nice resolution
-    local render_sizeX=$((render_dist * 4))
-    local render_sizeY=$((render_dist * 2))
-
-    local IsAir=0
-
-
-    tile_counter=0
-    pFrame=()
-
-
-    for ((i=0;i<=render_tiles;i++)) do
-        IsAir=0
-        let "pF_index_X++" #there is a X increment needed for the world border to work
-        # but idk how where and how to do it. Maybe here maybe not
-        if [ "$tile_counter" -ge "$render_sizeX" ]
-        then
-            pFrame+="\n"
-            tile_counter=0
-
-            pF_index_X=$p2_startX
-            let "pF_index_Y++"
-            GetTileIndex $pF_index_X $pF_index_Y
-            pF_index=$TileIndex
-        fi
-
-        #   this makes no sense because of 2d many values are out of map effected not only these
-        #   pls fix this if you get back to this technique
-        if [[ "$pF_index" -lt "0" ]] #|| [[ "$pF_index_X" -gt "world_sizeX" ]]
-        then
-            pFrame+="$Air"
-            let "pF_index = 0"
-        fi
-    
-        if [[ "$pF_index_Y" -lt "0" ]] || [[ "$pF_index_Y" -gt "world_sizeY" ]]
-        then
-            IsAir=1
-        fi
-
-        if [[ "$pF_index_X" -lt "0" ]] || [[ "$pF_index_X" -gt "world_sizeX" ]]
-        then
-            IsAir=1
-        fi
-
-        if [[ "$is_debug" == "1" ]]
-        then
-            pFrame+="i:$pF_index|x:$pF_index_X|y:$pF_index_Y"
-        fi
-        if [[ "$IsAir" == "1" ]]
-        then
-            pFrame+="$Air"
-        else
-            pFrame+="${world[$pF_index]}"
-        fi
-        tile_counter=$((tile_counter + 1))
-        pF_index=$((pF_index + 1))
-    done
-    printf "$pFrame"
-    echo ""
+function GetTileIndexSave { #dropping weird errors
+    local paraX=$1
+    local paraY=$2
+    TileIndex=-1
+    if [[ "$paraX" -lt "0" ]] || [[ "$paraX" -gt "$world_sizeXm" ]]
+    then
+        return
+    elif [[ "$paraY" -lt "0" ]] || [[ "$paraY" -gt "$world_sizeYm" ]]
+    then
+        return
+    fi
+#    if [[ "$paraX" -lt "0" ]] || [[ "$paraX" -gt "$world_sizeXm" ]]
+#    then
+#        return
+#    elif [[ "$paraY" -lt "0" ]] || [[ "$paraY" -gt "$world_sizeYm" ]]
+#    then
+#        return
+#    fi
+    TileIndex=$((world_sizeX * paraY + paraX))
 }
 
 function PrintFrame {
     pFrame=()
-    tile_counter=0
-    #local p_from=$((GetPlayerTileIndex - render_dist * world_sizeY))
-    #local p_to=$((GetPlayerTileIndex + render_dist * world_sizeY))
-    # leave em local only made global for debugging
-    p_fromX=$((posX - render_dist))
-    p_fromY=$((0))
-    GetTileIndex $p_fromX $p_fromY
-    p_from=$((TileIndex))
+    PrintTopHUD
+    CreateGameChunk
+    PrintBotHUD
+    clear
+    printf "$pFrame"
+}
 
-    p_toX=$((posX + render_dist))
-    p_toY=$((world_sizeY))
-    GetTileIndex $p_toX $p_toY
-    p_to=$((TileIndex))
-
-    if [ "$p_from" -lt 0 ]
-    then
-        p_from=0
-    fi
-    if [ "$p_to" -gt "$world_tiles" ]
-    then
-        p_to=$((world_tiles))
-    fi
-
-    for ((i=p_from;i<=p_to;i++)) do
-        if [[ "$i" -lt 0 || "$i" -gt "$world_tiles" ]]
+function CreateHPstr {
+    local i
+    hp_str="["
+    for ((i=0;i<bhp;i++)) do
+        if [[ "$i" -lt "$hp" ]]
         then
-    # dont add tiles because in 2d its messed up
-    #       pFrame+=" "
-            pFrame+=""
+            hp_str+="+"
         else
-            if [ "$tile_counter" -ge "$world_sizeX" ]
-            then
-                pFrame+="\n"
-                tile_counter=0
-            fi
-
-            pFrame+="${world[$i]}"
-            tile_counter=$((tile_counter + 1)) #keep it in else to ignore out of map tiles
+            hp_str+=" "
         fi
     done
-    printf "$pFrame"
-    echo ""
+    hp_str+="]"
 }
 
-function CreateWorldOld {
-    #read -p "world sizeX: " world_sizeX
-    echo "creating world..."
-    world_sizeX=100
-    world_sizeY=3
-    world_sizeXm=$((world_sizeX - 1))
-    world_sizeYm=$((world_sizeY - 1))
-    #declare -A world #makes stuff invisible
-
-    for ((y=0;y<=world_sizeY;y++)) do
-        for ((x=0;x<=world_sizeX;x++)) do
-            world[$x,$y]="_"
-        done
-    done
-
-
-    #c=0
-    #while [  $c -lt $world_sizeX ]; do
-    #world[$c]="$block"
-    #c=$((c + 1))
-    #done
-    world[5,1]="T"
-    world[2,3]="x"
-    clear
+function PrintTopHUD {
+    if [[ "$IsHUD" == "1" ]]
+    then
+        #rand=$(( $RANDOM % 10 + 60 ))
+        #pFrame+="fps: $rand\n\n"
+        pFrame+="tick: $TotalTicks\n"
+    fi
 }
 
-function CreateChunkOld {
-    Chunk=()
-    posX=$1
-    posY=$2
-    cfrom=$((pos - render_dist))
-    cto=$((pos + render_dist))
+function PrintBotHUD {
+#    echo ""
+#    echo "pos:  $posX|$posY"
+#    echo "world: $world_sizeX x $world_sizeY tiles $world_tiles"
+#    echo "render distance: $render_dist"
+#    echo "<debug> f $p_from t $p_to pindex $PlayerTileIndex"
+#    echo "'t' test 'o' options 'x' eXit 'w''a''s''d' move"
 
-    for ((y=0;y<=world_sizeY;y++)) do
-        for ((x=$cfrom;x<=$cto;x++)) do
-            if [ "$x" = "$posX" ] && [ "$y" = "$posY" ]
-            then
-                Chunk+="a"
-            elif [ $x -lt 0 ]
-            then
-                Chunk+=" "
-            else
-                Chunk+="${world[$x,$y]}"
-            fi
-        done
-        Chunk+="\n"
-    done
+    if [[ "$IsHUD" == "1" ]]
+    then
+        pFrame+="\n"
+        pFrame+="pos:  $posX|$posY pindex: $PlayerTileIndex \n"
+        pFrame+="world: $world_sizeX x $world_sizeY tiles $world_tiles\n"
+        pFrame+="bot[0] Alive: ${aBotAlive[0]} \n"
+        pFrame+="IsLeftHand: $IsLeftHand IsRightHand: $IsRightHand"
+        #pFrame+="render distance: $render_dist\n"
+        #pFrame+="AimDir: $AimDir \n"
+        #pFrame+="IsGrounded: $IsGrounded AliveBullets: $AliveBullets \n"
+    elif [[ "$IsHUD" == "2" ]]
+    then
+        CreateHPstr
+        pFrame+="\n"
+        pFrame+="$hp_str \n"
+        pFrame+="gold: $gold"
+    fi
+    PrintChat $ShowFullChat
+}
+
+function DoJump {
+    if [[ "$HasDoubleJump" == "1" ]]
+    then
+        if [[ "$IsGrounded" == "1" ]]
+        then
+            IsJump=1
+            TilesJumped=0
+        else #double jump in air
+            IsJump=1
+            TilesJumped=2
+            HasDoubleJump=0
+        fi
+    fi
+}
+
+function SwapHands {
+    local slh
+    slh=$LeftHand
+    LeftHand=$RightHand
+    RightHand=$slh
+    slh=$IsLeftHand
+    IsLeftHand=$IsRightHand
+    IsRightHand=$slh
+}
+
+function MoveRight {
+    local OldAimDir
+    OldAimDir=$AimDir
+    AimDir=1
+    if [[ "$OldAimDir" != "$AimDir" ]]
+    then
+        SwapHands
+    fi
+    posX=$((posX + 1))
+}
+
+function MoveLeft {
+    local OldAimDir
+    OldAimDir=$AimDir
+    AimDir=-1
+    if [[ "$OldAimDir" != "$AimDir" ]]
+    then
+        SwapHands
+    fi
+    posX=$((posX - 1))
 }
 
 function GameTick {
     while true;
     do
         sleep 0.01
-        clear #TODO: move clear instruction directly above the print frame line
-        # so no calulation is done between clear and print new and we dont get a glitchy game
-        rand=$(( $RANDOM % 10 + 60 ))
-        #tophud
-        echo "fps: $rand"
-        echo ""
 
         stty -icanon time 0 min 0
         read -s input
 
         if [ "$input" = "a" ] && [ "$posX" -gt 0 ]; then
-            posX=$((posX - 1))
+            MoveLeft
         elif [[ "$input" = "d" && "$posX" -lt "$world_sizeXm" ]]; then
-            posX=$((posX + 1))
+            MoveRight
         elif [ "$input" = "w" ] && [ "$posY" -gt 0 ]; then
-            posY=$((posY - 1))
+            #posY=$((posY - 1))
+            DoJump
         elif [ "$input" = "s" ] && [ "$posY" -lt "$world_sizeYm" ]; then
             posY=$((posY + 1))
         elif [ "$input" = "o" ]; then
@@ -393,22 +358,40 @@ function GameTick {
             options
         elif [ "$input" = "k" ]; then
             die
+        elif [ "$input" = "q" ]; then
+            ShowFullChat=1
+        elif [ "$input" = "b" ]; then
+            damage
+            AddBot $PlayerTileIndex
+        elif [ "$input" = "h" ]; then
+            if [[ "$IsHUD" == "0" ]]
+            then
+                IsHUD=1
+            elif [[ "$IsHUD" == "1" ]]
+            then
+                IsHUD=2
+            else
+                IsHUD=0
+            fi
         elif [ "$input" = "t" ]; then
             stty sane
+            ShowFullChat=1
+            PrintFrame #rerender frame to show chat
             ChatCmd
         elif [ "$input" = "r" ]; then
             stty sane
             clear
             CreateWorld
         elif [ "$input" = "p" ]; then
-            if [ "$skin" = "#" ]
-            then
-                skin="a"
-                kill_skin="#"
-            else
-                skin="#"
-                kill_skin="a"
-            fi
+            AddBullet $PlayerTileIndex $AimDir
+#            if [ "$skin" = "#" ]
+#            then
+#                skin="a"
+#                kill_skin="#"
+#            else
+#                skin="#"
+#                kill_skin="a"
+#            fi
         elif [ "$input" = "x" ]; then
             stty sane
             clear
@@ -418,39 +401,88 @@ function GameTick {
 
         stty sane
 
-        GetTileIndex $posX $posY
-        PlayerTileIndex=$TileIndex
-        world[$TileIndex]="$skin"
-        echo ""
-        PrintFrame2
-        if [[ "$is_debug" == 1 ]]
+        tmod=$((TotalTicks % 20))
+        if [[ "$tmod" == "0" ]]
         then
-            sleep 1 #TODO: make this nicer (better reability for debug info) 
+            SlowTick
         fi
-    #   PrintWorld
-
-    #    CreateChunk $posX $posY
-    #    printf "$Chunk"
-
-
-    #    world[$posX]="#"
-
-    #    c=0
-    #    while [  $c -lt $chunk_size ]; do
-    #        printf "${world[$c]}"
-    #        c=$((c + 1))
-    #    done
-
-        #subhud
-        echo ""
-        echo "pos:  $posX|$posY"
-        echo "world: $world_sizeX x $world_sizeY tiles $world_tiles"
-        echo "render distance: $render_dist"
-        echo "<debug> f $p_from t $p_to pindex $PlayerTileIndex"
-    #    echo "'t' test 'o' options 'x' eXit 'w''a''s''d' move"
+        BulletTick
+        AddTail
+        GameLogic
+        SetPlayer
+        BotTick
+        CollectGold $PlayerTileIndex
+        CollectShield $PlayerTileIndex
+        PrintFrame
+        let "TotalTicks++"
     done
 }
 
+function SlowTick {
+    ShowFullChat=0
+    ChatTick
+}
+
+function SetPlayer {
+    #GetTileIndex $posX $posY
+    #world[$TileIndex]="$skin"
+    SetTileXY $posX $posY $skin
+    PlayerTileIndex=$TileIndex
+    PlayerTileIndexL=$((PlayerTileIndex - 1))
+    PlayerTileIndexR=$((PlayerTileIndex + 1))
+    UpdatePosHistory $PlayerTileIndex
+}
+
+function ClearTileIndex {
+    #parameter 1=Index
+    #parameter 2=TileToClear
+    #parameter 3=ClearTile
+    #This func is used to remove past
+    #postions of moving tiles
+    #it only overrides if the $2 tile is found
+    if [[ "${world[$1]}" == "$2" ]]
+    then
+        world[$1]=$3
+    fi
+}
+
+function SetTileXY {
+    #parameter 1=X
+    #parameter 2=Y
+    #parameter 3=Value
+    GetTileIndex $1 $2
+    SetTileSave $TileIndex $3
+}
+
+function SetTileIndex {
+    #parameter 1=Index
+    #parameter 2=Value
+    SetTileSave $1 $2
+}
+
+function SetTileSave {
+    #parameter 1=TileIndex
+    #parameter 2=Value
+    if [[ "$1" -gt "0" ]]
+    then
+        if [[ "${world[$1]}" == "_" ]]
+        then
+            world[$1]="$2"
+        else
+            # don't overwrite
+            test
+        fi
+    fi
+}
+
+#TODO: remove this debug message
+#echo "sizeX: $world_sizeX"
+#echo "Xm: $world_sizeXm"
+#echo "sizeY: $world_sizeY" 
+#echo "Ym: $world_sizeYm"
+#
+#
+#read -n 1 -s -p ""
 
 CreateWorld
 GameTick
