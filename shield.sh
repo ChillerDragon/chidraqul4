@@ -7,8 +7,11 @@ aShield=()
 HasShield=0
 
 function SetShield {
-    world[$1]="|"
-    aShield[$1]=1
+    if [[ "${world[$1]}" == "_" ]]
+    then
+        world[$1]="|"
+        aShield[$1]=1
+    fi
 }
 
 function CollectShield {

@@ -57,17 +57,17 @@ function CreateGameChunk { #PrintFrame3
                 equal=$((pF_index % 2))
                 if [[ "$equal" == "0" ]]
                 then
-                    pFrame+="X"
+                    pFrame+="$OOM2"
                 else
-                    pFrame+="$Air"
+                    pFrame+="$OOM1"
                 fi
             else
                 equal=$((pF_index % 2))
                 if [[ "$equal" == "0" ]]
                 then
-                    pFrame+="$Air"
+                    pFrame+="$OOM1"
                 else
-                    pFrame+="X"
+                    pFrame+="$OOM2"
                 fi
             fi
     

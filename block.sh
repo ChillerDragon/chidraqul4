@@ -5,8 +5,46 @@
 
 aBlock=()
 aBlockHP=()
+Block="O"
+is_block=0
+
+function DamageBlock {
+    local index=$1
+    local dmg=$2
+    IsBlock $index
+    if [[ "$is_block" == "1" ]]
+    then
+        aBlockHP[$index]=$((aBlockHP[$index] - dmg))
+        if [[ "${aBlockHP[$index]}" -lt "1" ]]
+        then
+            let "blocks++"
+            aBlock[$index]=0
+            world[$index]="_"
+        fi
+    fi
+}
 
 function SetBlock {
+    if [[ "$1" -gt "0" ]] #TODO: index0 should be valid since its the 1st block
+    then
+        world[$1]="$Block"
+        aBlock[$1]=1
+        aBlockHP[$1]=10
+    else
+        clear
+        echo "[SetBlock] ERROR index $1 out of range"
+        exit
+    fi
+}
+
+function IsBlock {
+    if [[ "${aBlock[$1]}" == "1" ]]
+    then
+        is_block=1
+        return 1
+    fi
+    is_block=0
+    return 0
 }
 
 

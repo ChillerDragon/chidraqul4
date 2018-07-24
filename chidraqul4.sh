@@ -13,6 +13,7 @@ source cmd.sh
 source chat.sh
 source gold.sh
 source shield.sh
+source block.sh
 
 echo -n -e "\033]0;chidraqul4\007"
 
@@ -20,9 +21,13 @@ LeftHand="_"
 RightHand="_"
 IsLeftHand=0
 IsRightHand=0
-Air="O"
+#OOM1="~" #OutOfMap
+#OOM2="@" #OutOfMap
+OOM1=" "
+OOM2=" "
 TotalTicks=0
 gold=0
+blocks=0
 bhp=10
 hp=$bhp
 hp_str="[+]"
@@ -35,9 +40,11 @@ kill_skin="a"
 block="_"
 render_dist=6
 is_debug=0
-IsHUD=0
+IsHUD=2
 ShowFullChat=0
 AimDir=1
+AimDirY=0
+AimPos=0
 aPrevPosTime=()
 aPrevPos=()
 history_len=10
@@ -273,8 +280,9 @@ function PrintBotHUD {
         pFrame+="\n"
         pFrame+="pos:  $posX|$posY pindex: $PlayerTileIndex \n"
         pFrame+="world: $world_sizeX x $world_sizeY tiles $world_tiles\n"
-        pFrame+="bot[0] Alive: ${aBotAlive[0]} \n"
-        pFrame+="IsLeftHand: $IsLeftHand IsRightHand: $IsRightHand"
+        pFrame+="AimPos: $AimPos AimDirX: $AimDir AimDirY: $AimDirY"
+        #pFrame+="bot[0] Alive: ${aBotAlive[0]} \n"
+        #pFrame+="IsLeftHand: $IsLeftHand IsRightHand: $IsRightHand"
         #pFrame+="render distance: $render_dist\n"
         #pFrame+="AimDir: $AimDir \n"
         #pFrame+="IsGrounded: $IsGrounded AliveBullets: $AliveBullets \n"
@@ -283,9 +291,17 @@ function PrintBotHUD {
         CreateHPstr
         pFrame+="\n"
         pFrame+="$hp_str \n"
-        pFrame+="gold: $gold"
+        pFrame+="gold: $gold blocks: $blocks\n"
     fi
     PrintChat $ShowFullChat
+}
+
+function DoSetBlock {
+    if [[ "$blocks" -gt "0" ]]
+    then
+        SetBlock $AimPos
+        blocks=$((blocks - 1))
+    fi
 }
 
 function DoJump {
@@ -313,15 +329,30 @@ function SwapHands {
     IsRightHand=$slh
 }
 
+function CheckNewX {
+    local NewX
+    NewX=$1
+    GetTileIndex $NewX $posY
+    CheckCollision $TileIndex
+    if [[ "$is_collision" == "1" ]]
+    then
+        return
+    else
+        posX=$NewX
+    fi
+}
+
 function MoveRight {
     local OldAimDir
+    local NewX
     OldAimDir=$AimDir
     AimDir=1
     if [[ "$OldAimDir" != "$AimDir" ]]
     then
         SwapHands
     fi
-    posX=$((posX + 1))
+    NewX=$((posX + 1))
+    CheckNewX $NewX
 }
 
 function MoveLeft {
@@ -332,7 +363,23 @@ function MoveLeft {
     then
         SwapHands
     fi
-    posX=$((posX - 1))
+    NewX=$((posX - 1))
+    CheckNewX $NewX
+}
+
+function GetAimPos { #TODO: if aim is out of world (left side) it aims at world border right side
+    if [[ "$AimDirY" == "0" ]]
+    then
+        AimPos=$((PlayerTileIndex + AimDir))
+    elif [[ "$AimDirY" == "-1" ]]
+    then
+        GetHigherIndex_Y $PlayerTileIndex
+        AimPos=$((HigherIndex_Y + AimDir))
+    elif [[ "$AimDirY" == "1" ]]
+    then
+        GetLowerIndex_Y $PlayerTileIndex
+        AimPos=$((LowerIndex_Y + AimDir))
+    fi
 }
 
 function GameTick {
@@ -345,13 +392,19 @@ function GameTick {
 
         if [ "$input" = "a" ] && [ "$posX" -gt 0 ]; then
             MoveLeft
+            AimDirY=0
         elif [[ "$input" = "d" && "$posX" -lt "$world_sizeXm" ]]; then
             MoveRight
+            AimDirY=0
         elif [ "$input" = "w" ] && [ "$posY" -gt 0 ]; then
             #posY=$((posY - 1))
             DoJump
+            AimDirY=1
+            AimDir=0
         elif [ "$input" = "s" ] && [ "$posY" -lt "$world_sizeYm" ]; then
-            posY=$((posY + 1))
+            #posY=$((posY + 1))
+            AimDirY=-1
+            AimDir=0
         elif [ "$input" = "o" ]; then
             stty sane
             clear
@@ -361,8 +414,9 @@ function GameTick {
         elif [ "$input" = "q" ]; then
             ShowFullChat=1
         elif [ "$input" = "b" ]; then
-            damage
-            AddBot $PlayerTileIndex
+            DoSetBlock
+            #damage
+            #AddBot $PlayerTileIndex
         elif [ "$input" = "h" ]; then
             if [[ "$IsHUD" == "0" ]]
             then
@@ -383,7 +437,9 @@ function GameTick {
             clear
             CreateWorld
         elif [ "$input" = "p" ]; then
-            AddBullet $PlayerTileIndex $AimDir
+            #local r=$((PlayerTileIndex + AimDir))
+            DamageBlock $AimPos 20
+            #AddBullet $PlayerTileIndex $AimDir
 #            if [ "$skin" = "#" ]
 #            then
 #                skin="a"
@@ -406,6 +462,8 @@ function GameTick {
         then
             SlowTick
         fi
+ 
+        GetAimPos
         BulletTick
         AddTail
         GameLogic
