@@ -21,7 +21,7 @@ function CreateGameChunk { #PrintFrame3
         IsAir=0
         let "pF_index_X++" 
 
-        if [ "$tile_counterX" -ge "$render_sizeX" ]
+        if [[ "$tile_counterX" -ge "$render_sizeX" ]]
         then
             tile_counterX=0
             pFrame+="\n"
@@ -79,7 +79,12 @@ function CreateGameChunk { #PrintFrame3
             then
                 pFrame+="$RightHand"
             else
-                pFrame+="${world[$pF_index]}"
+                if [[ "${aBomb[$pF_index]}" == "1" ]]
+                then
+                    pFrame+="$bomb"
+                else
+                    pFrame+="${world[$pF_index]}"
+                fi
             fi
         fi
     done

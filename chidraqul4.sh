@@ -15,6 +15,7 @@ source gold.sh
 source shield.sh
 source block.sh
 source loading.sh
+source bomb.sh
 
 echo -n -e "\033]0;chidraqul4\007"
 
@@ -442,7 +443,9 @@ function GameTick {
             CreateWorld
         elif [ "$input" = "p" ]; then
             #local r=$((PlayerTileIndex + AimDir))
-            DamageBlock $AimPos 20
+            #DamageBlock $AimPos 20
+            AddBomb $posX $posY
+            #Explode $posX $posY 2
             #AddBullet $PlayerTileIndex $AimDir
 #            if [ "$skin" = "#" ]
 #            then
@@ -483,6 +486,7 @@ function GameTick {
 function SlowTick {
     ShowFullChat=0
     ChatTick
+    BombTick
 }
 
 function SetPlayer {

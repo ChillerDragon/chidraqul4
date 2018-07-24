@@ -97,6 +97,12 @@ AddCmd "testarea" ConTestarea "debug stuff"
 AddCmd "testarea2" ConTestarea2 "debug stuff"
 AddCmd "bot" ConBot "shows bot status"
 AddCmd "tele" ConTele "tele x y"
+AddCmd "exp" ConExp "explode x y r"
+
+function ConExp {
+    SendChat "Explode at ($1/$2) radius=$3"
+    Explode $1 $2 $3
+}
 
 function ConTele {
     if [[ "$#" -lt "2" ]]
