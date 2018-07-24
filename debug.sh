@@ -3,6 +3,13 @@
 # Get the full official release at:
 # https://github.com/ChillerDragon/chidraqul4
 
+function print_dbg {
+    if [[ "$arg_debug" == "1" ]]
+    then
+        printf "$1\n"
+    fi
+}
+
 function testarea2 {
     local iks
     local yps

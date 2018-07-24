@@ -7,10 +7,13 @@ aShield=()
 HasShield=0
 
 function SetShield {
-    if [[ "${world[$1]}" == "_" ]]
+    if [[ "$1" -gt "-1" ]]
     then
-        world[$1]="|"
-        aShield[$1]=1
+        if [[ "${world[$1]}" == "$world_air" ]]
+        then
+            world[$1]="|"
+            aShield[$1]=1
+        fi
     fi
 }
 

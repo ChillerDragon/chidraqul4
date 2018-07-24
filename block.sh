@@ -19,13 +19,13 @@ function DamageBlock {
         then
             let "blocks++"
             aBlock[$index]=0
-            world[$index]="_"
+            world[$index]="$world_air"
         fi
     fi
 }
 
 function SetBlock {
-    if [[ "$1" -gt "0" ]] #TODO: index0 should be valid since its the 1st block
+    if [[ "$1" -gt "-1" ]]
     then
         world[$1]="$Block"
         aBlock[$1]=1

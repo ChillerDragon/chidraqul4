@@ -6,8 +6,11 @@
 aGold=()
 
 function SetGold {
-    world[$1]="$"
-    aGold[$1]=1
+    if [[ "$1" -gt "-1" ]]
+    then
+        world[$1]="$"
+        aGold[$1]=1
+    fi
 }
 
 function CollectGold {

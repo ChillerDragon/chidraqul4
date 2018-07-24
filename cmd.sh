@@ -96,6 +96,19 @@ AddCmd "history" ConHistory "shows player history"
 AddCmd "testarea" ConTestarea "debug stuff"
 AddCmd "testarea2" ConTestarea2 "debug stuff"
 AddCmd "bot" ConBot "shows bot status"
+AddCmd "tele" ConTele "tele x y"
+
+function ConTele {
+    if [[ "$#" -lt "2" ]]
+    then
+        SendChat "too few args use tele x y"
+        return
+    fi
+    posX=$1
+    posY=$2
+    SetPlayer
+    SendChat "[*] teleported to $TileIndex"
+}
 
 function ConBot {
     BotStatus

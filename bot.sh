@@ -65,7 +65,7 @@ function MoveBot {
     aBotLastIndex[$id]=${aBotIndex[$i]}
     aBotIndex[$id]=$((aBotIndex[i] + mov))
 
-    world[${aBotLastIndex[$id]}]="_"
+    world[${aBotLastIndex[$id]}]="$world_air"
     world[${aBotIndex[$id]}]="$botskin"
 }
 

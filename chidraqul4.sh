@@ -14,11 +14,12 @@ source chat.sh
 source gold.sh
 source shield.sh
 source block.sh
+source loading.sh
 
 echo -n -e "\033]0;chidraqul4\007"
 
-LeftHand="_"
-RightHand="_"
+LeftHand=$world_air
+RightHand=$world_air
 IsLeftHand=0
 IsRightHand=0
 #OOM1="~" #OutOfMap
@@ -37,7 +38,6 @@ spawnX=0
 spawnY=0
 skin="#"
 kill_skin="a"
-block="_"
 render_dist=6
 is_debug=0
 IsHUD=2
@@ -70,16 +70,21 @@ MAX_BOTS=10
 botskin="◊"
 BotWalked=0
 BotDir=1
+#ARGS
+arg_debug=0
 
+
+function SetArgs {
+    arg_debug=$1
+}
 
 function UnsetRightHand {
-    SetRightHand "_"
+    SetRightHand "$world_air"
     IsRightHand=0
-    SendChat "RECHTS $IsRightHand"
 }
 
 function UnsetLeftHand {
-    SetLeftHand "_"
+    SetLeftHand "$world_air"
     IsLeftHand=0
 }
 
@@ -109,9 +114,9 @@ function AddTail {
     if [[ "$IsTail" == "1" ]]
     then
         world[${aPrevPosTime[0]}]="+"
-        world[${aPrevPosTime[$history_len]}]="_"
+        world[${aPrevPosTime[$history_len]}]=$world_air
     else
-        world[${aPrevPosTime[0]}]="_"
+        world[${aPrevPosTime[0]}]=$world_air
     fi
 }
 
@@ -178,7 +183,6 @@ function GameOver {
     die
     skin="#"
     kill_skin="a"
-    block="_"
     CreateWorld
     GameTick
 }
@@ -280,7 +284,7 @@ function PrintBotHUD {
         pFrame+="\n"
         pFrame+="pos:  $posX|$posY pindex: $PlayerTileIndex \n"
         pFrame+="world: $world_sizeX x $world_sizeY tiles $world_tiles\n"
-        pFrame+="AimPos: $AimPos AimDirX: $AimDir AimDirY: $AimDirY"
+        pFrame+="AimPos: $AimPos AimDirX: $AimDir AimDirY: $AimDirY\n"
         #pFrame+="bot[0] Alive: ${aBotAlive[0]} \n"
         #pFrame+="IsLeftHand: $IsLeftHand IsRightHand: $IsRightHand"
         #pFrame+="render distance: $render_dist\n"
@@ -523,7 +527,7 @@ function SetTileSave {
     #parameter 2=Value
     if [[ "$1" -gt "0" ]]
     then
-        if [[ "${world[$1]}" == "_" ]]
+        if [[ "${world[$1]}" == "$world_air" ]]
         then
             world[$1]="$2"
         else
@@ -542,6 +546,7 @@ function SetTileSave {
 #
 #read -n 1 -s -p ""
 
+SetArgs $1
 CreateWorld
 GameTick
 

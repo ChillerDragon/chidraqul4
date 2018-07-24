@@ -14,10 +14,10 @@ function BulletTick {
             prev_pos=$((pos - aBulletDir[i]))
             next_pos=$((aBulletIndex[i] + aBulletDir[i]))
             CheckBulletHit $i $next_pos
-            #SetTileIndex $prev_pos "_"
-            ClearTileIndex $prev_pos "+" "_"
+            #SetTileIndex $prev_pos "$world_air"
+            ClearTileIndex $prev_pos "+" "$world_air"
             SetTileIndex ${aBulletIndex[$i]} "+"
-            #world[$prev_pos]="_"
+            #world[$prev_pos]="$world_air"
             #world[${aBulletIndex[$i]}]="+"
             aBulletIndex[$i]=$next_pos
             aBulletTick[$i]=$((aBulletTick[i] + 1))
@@ -36,7 +36,7 @@ function CheckBulletHit {
     local pos
     id=$1
     pos=$2
-    if [[ "${world[$pos]}" == "_" ]] #ignore normal world tiles
+    if [[ "${world[$pos]}" == "$world_air" ]] #ignore normal world tiles
     then
         return
     fi
@@ -72,7 +72,7 @@ function DeleteBullet {
     local old_pos
     i=$1
     old_pos=$2
-    world[$old_pos]="_"
+    world[$old_pos]="$world_air"
     #printf " deleted at index $old_pos "
     #read -n 1 -s -p ""
     aBulletAlive[$i]=0
