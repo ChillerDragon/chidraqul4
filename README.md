@@ -14,4 +14,5 @@ gold: 4 blocks: 0
 ```
 
 Preview(Image):
-![Demo](img/chidraqul4.sh)
+
+![Demo](img/chidraqul4.png)
