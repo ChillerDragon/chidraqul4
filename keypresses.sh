@@ -54,11 +54,21 @@ function KeyPresses {
             clear
             CreateWorld
         elif [ "$input" = "p" ]; then
+            if [[ "$CurrentWeapon" == "1" ]]
+            then
+                DamageBlock $AimPos 20
+            elif [[ "$CurrentWeapon" == "2" ]]
+            then
+                AddBullet $PlayerTileIndex $AimDir
+            elif [[ "$CurrentWeapon" == "3" ]]
+            then
+                AddBomb $posX $posY
+            elif [[ "$CurrentWeapon" == "4" ]]
+            then
+                test
+            fi
             #local r=$((PlayerTileIndex + AimDir))
-            #DamageBlock $AimPos 20
-            #AddBomb $posX $posY
             #Explode $posX $posY 2
-            AddBullet $PlayerTileIndex $AimDir
 #            if [ "$skin" = "#" ]
 #            then
 #                skin="a"
@@ -67,6 +77,26 @@ function KeyPresses {
 #                skin="#"
 #                kill_skin="a"
 #            fi
+        elif [ "$input" = "0" ]; then
+            CurrentWeapon=0
+        elif [ "$input" = "1" ]; then
+            CurrentWeapon=1
+        elif [ "$input" = "2" ]; then
+            CurrentWeapon=2
+        elif [ "$input" = "3" ]; then
+            CurrentWeapon=3
+        elif [ "$input" = "4" ]; then
+            CurrentWeapon=4
+        elif [ "$input" = "5" ]; then
+            CurrentWeapon=5
+        elif [ "$input" = "6" ]; then
+            CurrentWeapon=6
+        elif [ "$input" = "7" ]; then
+            CurrentWeapon=7
+        elif [ "$input" = "8" ]; then
+            CurrentWeapon=8
+        elif [ "$input" = "9" ]; then
+            CurrentWeapon=9
         elif [ "$input" = "x" ]; then
             stty sane
             clear

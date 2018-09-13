@@ -24,6 +24,7 @@ LeftHand=$world_air
 RightHand=$world_air
 IsLeftHand=0
 IsRightHand=0
+CurrentWeapon=1
 #OOM1="~" #OutOfMap
 #OOM2="@" #OutOfMap
 OOM1=" "
