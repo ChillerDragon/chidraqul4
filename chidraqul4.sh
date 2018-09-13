@@ -18,6 +18,7 @@ source loading.sh
 source bomb.sh
 source options.sh
 source keypresses.sh
+source username.sh
 
 echo -n -e "\033]0;chidraqul4\007"
 

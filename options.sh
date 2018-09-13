@@ -25,7 +25,9 @@ function ListOptions {
     for ((i=0;i<NumOptions;i++)) do
         if [[ "$i" == "$SelectedOpt" ]]
         then
+            tput bold
             echo "» ${aOptionName[$i]} «"
+            tput sgr0
         else
             echo "  ${aOptionName[$i]}"
         fi
@@ -75,17 +77,17 @@ function OptionsMain {
 }
 
 AddOption "renderdistance" ConRenderdist
-AddOption "sample opt1" ConSampleopt1
-AddOption "sample opt2" ConSampleopt2
+AddOption "username" ConUsername
+AddOption "quit" ConQuit
 
 function ConRenderdist {
     read -p "Renderdistance: " render_dist
 }
 
-function ConSampleopt1 {
-    read -p "sampleopt1: "
+function ConUsername {
+    UsernameMain
 }
 
-function ConSampleopt2 {
-    read -p "sampleopt2: "
+function ConQuit {
+    exit
 }

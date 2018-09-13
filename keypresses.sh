@@ -11,6 +11,10 @@ function KeyPresses {
         if [ "$input" = "a" ] && [ "$posX" -gt 0 ]; then
             MoveLeft
             AimDirY=0
+        elif [[ "$input" == $'\e' ]]; then
+            stty sane
+            clear
+            OptionsMain
         elif [[ "$input" = "d" && "$posX" -lt "$world_sizeXm" ]]; then
             MoveRight
             AimDirY=0
@@ -23,10 +27,6 @@ function KeyPresses {
             #posY=$((posY + 1))
             AimDirY=-1
             AimDir=0
-        elif [ "$input" = "o" ]; then
-            stty sane
-            clear
-            OptionsMain
         elif [ "$input" = "k" ]; then
             die
         elif [ "$input" = "q" ]; then
