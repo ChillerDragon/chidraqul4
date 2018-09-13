@@ -48,6 +48,9 @@ function UsernameInp {
 }
 
 function UsernameMain {
+    SendChat "username is currently in development"
+    return #TODO: finish me    
+
     UsernamePrint
     UsernameInp
     UsernameMain
