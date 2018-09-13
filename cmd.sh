@@ -173,18 +173,21 @@ function ConTest {
 }
 
 function ConDebug {
-    local value
-    value=$1
-    if [[ "$value" == "0" ]]
+    local value=$1
+    local max=2 #0=off 1=tile 2=aim
+
+    case $value in
+        ''|*[!0-9]*) SendChat "[debug] arg has to be a number"; return ;;
+        *) test ;;
+    esac
+
+    if [[ "$value" -lt "0" ]] || [[ "$value" -gt "$max" ]] 
     then
-        is_debug=0
-    elif [[ "$value" == "1" ]]
-    then
-        is_debug=1
-    else
-        printf " error only debug 1/0 allowed "
-        read -n 1 -s -p ""
+        SendChat "[debug] arg has to be in range 0-$max"
+        return
     fi
+
+    is_debug=$value
 }
 
 function ConHelp {

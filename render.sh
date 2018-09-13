@@ -78,6 +78,9 @@ function CreateGameChunk { #PrintFrame3
             elif [[ "$pF_index" == "$PlayerTileIndexR" ]] && [[ "$IsRightHand" == "1" ]]
             then
                 pFrame+="$RightHand"
+            elif [[ "$pF_index" == "$AimPos" ]] && [[ "$is_debug" == "2" ]]
+            then
+                pFrame+="."
             else
                 if [[ "${aBomb[$pF_index]}" == "1" ]]
                 then
