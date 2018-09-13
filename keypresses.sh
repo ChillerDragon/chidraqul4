@@ -4,6 +4,7 @@
 # https://github.com/ChillerDragon/chidraqul4
 
 function KeyPresses {
+        local input
         stty -icanon time 0 min 0
         read -s input
 
@@ -25,7 +26,7 @@ function KeyPresses {
         elif [ "$input" = "o" ]; then
             stty sane
             clear
-            options
+            OptionsMain
         elif [ "$input" = "k" ]; then
             die
         elif [ "$input" = "q" ]; then

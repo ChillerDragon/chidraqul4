@@ -16,6 +16,7 @@ source shield.sh
 source block.sh
 source loading.sh
 source bomb.sh
+source options.sh
 source keypresses.sh
 
 echo -n -e "\033]0;chidraqul4\007"
@@ -185,13 +186,7 @@ function GameOver {
 
     die
     skin="#"
-    kill_skin="a"
     CreateWorld
-    GameTick
-}
-
-function options {
-    read -p "Renderdistance: " render_dist
     GameTick
 }
 
