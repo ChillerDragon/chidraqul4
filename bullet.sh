@@ -27,7 +27,6 @@ function BulletTick {
             fi
         fi
     done
-    ClearDeadBullets #TODO: maybe move this to an slow tick func to gain performance
 }
 
 function CheckBulletHit {

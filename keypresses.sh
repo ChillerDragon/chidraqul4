@@ -56,9 +56,9 @@ function KeyPresses {
         elif [ "$input" = "p" ]; then
             #local r=$((PlayerTileIndex + AimDir))
             #DamageBlock $AimPos 20
-            AddBomb $posX $posY
+            #AddBomb $posX $posY
             #Explode $posX $posY 2
-            #AddBullet $PlayerTileIndex $AimDir
+            AddBullet $PlayerTileIndex $AimDir
 #            if [ "$skin" = "#" ]
 #            then
 #                skin="a"

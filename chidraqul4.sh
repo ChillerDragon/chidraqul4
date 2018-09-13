@@ -418,6 +418,7 @@ function SlowTick {
     ShowFullChat=0
     ChatTick
     BombTick
+    ClearDeadBullets
 }
 
 function SetPlayer {
