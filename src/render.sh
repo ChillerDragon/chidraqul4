@@ -3,6 +3,19 @@
 # Get the full official release at:
 # https://github.com/ChillerDragon/chidraqul4
 
+# not finished yet (features missing) but performance seems way better
+function FileMapRender { #PrintFrame4
+    local x
+    local y
+    x=$((posX - 1))
+    y=$((posY + 1))
+    clear
+    cat world.txt
+    tput cup $y $x
+    printf "$skin"
+    tput cup 0 0
+}
+
 function CreateGameChunk { #PrintFrame3
     local i
     local p_startX=$((posX - render_dist * 2))

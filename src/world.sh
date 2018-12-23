@@ -70,6 +70,21 @@ function GenerateTiles {
     done
 }
 
+function SaveWorldToFile {
+    printf "" > world.txt
+    local i
+    local mod
+    for ((i=0;i<=world_tiles;i++)) do
+        mod=$((i % world_sizeX))
+        if [ $mod == 0 ]
+        then
+            printf '\n' >> world.txt
+        else
+            printf "${world[$i]}" >> world.txt
+        fi
+    done
+}
+
 function CreateWorld {
     local i
     echo "deleting world..."
@@ -90,6 +105,8 @@ function CreateWorld {
 #        SpawnGold
 #    done
 
+    echo "save world to file..."
+    SaveWorldToFile
     clear
 }
 
