@@ -3,22 +3,22 @@
 # Get the full official release at:
 # https://github.com/ChillerDragon/chidraqul4
 
-source render.sh
-source debug.sh
-source world.sh
-source game.sh
-source bullet.sh
-source bot.sh
-source cmd.sh
-source chat.sh
-source gold.sh
-source shield.sh
-source block.sh
-source loading.sh
-source bomb.sh
-source options.sh
-source keypresses.sh
-source username.sh
+source src/render.sh
+source src/debug.sh
+source src/world.sh
+source src/game.sh
+source src/bullet.sh
+source src/bot.sh
+source src/cmd.sh
+source src/chat.sh
+source src/gold.sh
+source src/shield.sh
+source src/block.sh
+source src/loading.sh
+source src/bomb.sh
+source src/options.sh
+source src/keypresses.sh
+source src/username.sh
 
 echo -n -e "\033]0;chidraqul4\007"
 
