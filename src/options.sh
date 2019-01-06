@@ -86,13 +86,13 @@ function ConRenderdist {
 }
 
 function ConRenderMode {
-    read -p "Render Mode (3/4): " render_mode
+    read -p "Render Mode 3=chunk 4=file q=quit: " render_mode
     if [[ "$render_mode" == "q" ]]
     then
         OptionsMain
     elif [[ "$render_mode" != "3" ]] && [[ "$render_mode" != "4" ]]
     then
-        echo "invalid mode."
+        echo "invalid mode valid=3,4,q"
         ConRenderMode
     fi
     SaveWorldToFile
