@@ -24,5 +24,6 @@ function CollectShield {
         SetLeftHand "|"
         SendChat "[+] collected shield |"
         aShield[$1]=0
+        SaveWorldToFile
     fi
 }

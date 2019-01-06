@@ -240,15 +240,17 @@ function GetTileIndexSave { #dropping weird errors
 
 function PrintFrame {
     # rendering the frames from a file is much faster but it is not 100% done yet
-    # FileMapRender
-    # return
-
-    pFrame=()
-    PrintTopHUD
-    CreateGameChunk
-    PrintBotHUD
-    clear
-    printf "$pFrame"
+    if [[ "$render_mode" == "4" ]]
+    then
+        FileMapRender
+    else # render mode 3 (chunks)
+        pFrame=()
+        PrintTopHUD
+        CreateGameChunk
+        PrintBotHUD
+        clear
+        printf "$pFrame"
+    fi
 }
 
 function CreateHPstr {

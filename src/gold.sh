@@ -19,5 +19,6 @@ function CollectGold {
         let "gold++"
         SendChat "[+] collected gold \$\$\$"
         aGold[$1]=0
+        SaveWorldToFile
     fi
 }

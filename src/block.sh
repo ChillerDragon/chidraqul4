@@ -20,6 +20,7 @@ function DamageBlock {
             let "blocks++"
             aBlock[$index]=0
             world[$index]="$world_air"
+            SaveWorldToFile
         fi
     fi
 }

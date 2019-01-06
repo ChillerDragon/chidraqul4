@@ -3,6 +3,8 @@
 # Get the full official release at:
 # https://github.com/ChillerDragon/chidraqul4
 
+render_mode="3"
+
 # not finished yet (features missing) but performance seems way better
 function FileMapRender { #PrintFrame4
     local x

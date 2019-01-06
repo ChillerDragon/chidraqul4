@@ -76,12 +76,26 @@ function OptionsMain {
     OptionsInput
 }
 
-AddOption "renderdistance" ConRenderdist
+AddOption "render distance" ConRenderdist
+AddOption "render mode" ConRenderMode
 AddOption "username" ConUsername
 AddOption "quit" ConQuit
 
 function ConRenderdist {
     read -p "Renderdistance: " render_dist
+}
+
+function ConRenderMode {
+    read -p "Render Mode (3/4): " render_mode
+    if [[ "$render_mode" == "q" ]]
+    then
+        OptionsMain
+    elif [[ "$render_mode" != "3" ]] && [[ "$render_mode" != "4" ]]
+    then
+        echo "invalid mode."
+        ConRenderMode
+    fi
+    SaveWorldToFile
 }
 
 function ConUsername {

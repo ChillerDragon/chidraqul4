@@ -71,18 +71,23 @@ function GenerateTiles {
 }
 
 function SaveWorldToFile {
-    printf "" > world.txt
-    local i
-    local mod
-    for ((i=0;i<=world_tiles;i++)) do
-        mod=$((i % world_sizeX))
-        if [ $mod == 0 ]
-        then
-            printf '\n' >> world.txt
-        else
-            printf "${world[$i]}" >> world.txt
-        fi
-    done
+    if [[ "$render_mode" == "4" ]]
+    then
+        printf "" > world.txt
+        local i
+        local mod
+        GetTileIndex $posX $posY
+        world[$TileIndex]=" "
+        for ((i=0;i<=world_tiles;i++)) do
+            mod=$((i % world_sizeX))
+            if [ $mod == 0 ]
+            then
+                printf '\n' >> world.txt
+            else
+                printf "${world[$i]}" >> world.txt
+            fi
+        done
+    fi
 }
 
 function CreateWorld {
