@@ -25,8 +25,9 @@ source src/username.sh
 source src/client.sh
 
 # start network thread
+IsNcSupport=0
+TestNetDependency
 NetTick &
-
 
 echo -n -e "\033]0;chidraqul4\007"
 
@@ -301,7 +302,7 @@ function PrintBotHUD {
         pFrame+="pos:  $posX|$posY pindex: $PlayerTileIndex \n"
         pFrame+="world: $world_sizeX x $world_sizeY tiles $world_tiles\n"
         pFrame+="AimPos: $AimPos AimDirX: $AimDir AimDirY: $AimDirY\n"
-        pFrame+="network: $NetRead\n"
+        pFrame+="network: $NetRead netcatsupport: $IsNcSupport\n"
         #pFrame+="bot[0] Alive: ${aBotAlive[0]} \n"
         #pFrame+="IsLeftHand: $IsLeftHand IsRightHand: $IsRightHand"
         #pFrame+="render distance: $render_dist\n"

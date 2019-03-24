@@ -106,6 +106,11 @@ function ConUsername {
 
 function ConMultiplayer {
   local server_ip
+  if [ "$IsNcSupport" == "0" ]
+  then
+    SendChat "netcat is wrong version or not installed"
+    return
+  fi
   read -p "server ip: " server_ip
   ConnectToServer $server_ip
 }

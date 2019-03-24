@@ -9,9 +9,25 @@ function ConnectToServer() {
   SendChat "connected."
 }
 
+function TestNetDependency() {
+  local ret
+  command -v nc >/dev/null 2>&1 || {
+    IsNcSupport=0 # nc not installed
+    return
+  }
+  nc -w 1 -ul 4204
+  ret=$(echo $?)
+  echo "ret=$ret"
+  if [ "$ret" == "0" ]
+  then
+    IsNcSupport=1
+  fi
+  IsNcSupport=0 # nc args not supported
+}
+
 # threaded
 function NetTick() {
-  while [ true ]
+  while [ $IsNcSupport -eq 1 ]
   do
     # server:
     # echo "1" | nc -u -w 1 localhost 4204
