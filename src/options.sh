@@ -79,6 +79,7 @@ function OptionsMain {
 AddOption "render distance" ConRenderdist
 AddOption "render mode" ConRenderMode
 AddOption "username" ConUsername
+AddOption "multiplayer" ConMultiplayer
 AddOption "quit" ConQuit
 
 function ConRenderdist {
@@ -99,7 +100,14 @@ function ConRenderMode {
 }
 
 function ConUsername {
-    UsernameMain
+    # UsernameMain
+    read -p "Username: " username
+}
+
+function ConMultiplayer {
+  local server_ip
+  read -p "server ip: " server_ip
+  ConnectToServer $server_ip
 }
 
 function ConQuit {

@@ -12,9 +12,11 @@ function FileMapRender { #PrintFrame4
     x=$((posX - 1))
     y=$((posY + 1))
     clear
-    cat world.txt
+    cat .chidraqul_tmp/world.txt
     tput cup $y $x
     printf "$skin"
+    # tput cup 2 $NetRead
+    # printf "$botskin"
     tput cup 0 0
 }
 

@@ -73,7 +73,7 @@ function GenerateTiles {
 function SaveWorldToFile {
     if [[ "$render_mode" == "4" ]]
     then
-        printf "" > world.txt
+        printf "" > .chidraqul_tmp/world.txt
         local i
         local mod
         GetTileIndex $posX $posY
@@ -82,9 +82,9 @@ function SaveWorldToFile {
             mod=$((i % world_sizeX))
             if [ $mod == 0 ]
             then
-                printf '\n' >> world.txt
+                printf '\n' >> .chidraqul_tmp/world.txt
             else
-                printf "${world[$i]}" >> world.txt
+                printf "${world[$i]}" >> .chidraqul_tmp/world.txt
             fi
         done
     fi
