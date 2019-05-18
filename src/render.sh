@@ -5,6 +5,10 @@
 
 render_mode="3"
 
+function AddToFrame() {
+    pFrame="${pFrame}$1"
+}
+
 function PrintFrame {
     # rendering the frames from a file is much faster but it is not 100% done yet
     if [[ "$render_mode" == "4" ]]
@@ -38,8 +42,8 @@ function PrintTopHUD {
     if [[ "$IsHUD" == "1" ]]
     then
         #rand=$(( $RANDOM % 10 + 60 ))
-        #pFrame+="fps: $rand\n\n"
-        pFrame+="tick: $TotalTicks\n"
+        #AddToFrame "fps: $rand\n\n"
+        AddToFrame "tick: $TotalTicks\n"
     fi
 }
 
@@ -53,22 +57,22 @@ function PrintBotHUD {
 
     if [[ "$IsHUD" == "1" ]]
     then
-        pFrame+="\n"
-        pFrame+="pos:  $posX|$posY pindex: $PlayerTileIndex \n"
-        pFrame+="world: $world_sizeX x $world_sizeY tiles $world_tiles\n"
-        pFrame+="AimPos: $AimPos AimDirX: $AimDir AimDirY: $AimDirY\n"
-        pFrame+="network: $NetRead netcatsupport: $IsNcSupport\n"
-        #pFrame+="bot[0] Alive: ${aBotAlive[0]} \n"
-        #pFrame+="IsLeftHand: $IsLeftHand IsRightHand: $IsRightHand"
-        #pFrame+="render distance: $render_dist\n"
-        #pFrame+="AimDir: $AimDir \n"
-        #pFrame+="IsGrounded: $IsGrounded AliveBullets: $AliveBullets \n"
+        AddToFrame "\n"
+        AddToFrame "pos:  $posX|$posY pindex: $PlayerTileIndex \n"
+        AddToFrame "world: $world_sizeX x $world_sizeY tiles $world_tiles\n"
+        AddToFrame "AimPos: $AimPos AimDirX: $AimDir AimDirY: $AimDirY\n"
+        AddToFrame "network: $NetRead netcatsupport: $IsNcSupport\n"
+        #AddToFrame "bot[0] Alive: ${aBotAlive[0]} \n"
+        #AddToFrame "IsLeftHand: $IsLeftHand IsRightHand: $IsRightHand"
+        #AddToFrame "render distance: $render_dist\n"
+        #AddToFrame "AimDir: $AimDir \n"
+        #AddToFrame "IsGrounded: $IsGrounded AliveBullets: $AliveBullets \n"
     elif [[ "$IsHUD" == "2" ]]
     then
         CreateHPstr
-        pFrame+="\n"
-        pFrame+="$hp_str \n"
-        pFrame+="gold: $gold blocks: $blocks\n"
+        AddToFrame "\n"
+        AddToFrame "$hp_str \n"
+        AddToFrame "gold: $gold blocks: $blocks\n"
     fi
     PrintChat $ShowFullChat
 }
@@ -109,7 +113,7 @@ function CreateGameChunk { #PrintFrame3
         if [[ "$tile_counterX" -ge "$render_sizeX" ]]
         then
             tile_counterX=0
-            pFrame+="\n"
+            AddToFrame "\n"
             pF_index_X=$p_startX
             let "pF_index_Y++"
         fi
@@ -120,7 +124,7 @@ function CreateGameChunk { #PrintFrame3
 
         if [[ "$is_debug" == "1" ]]
         then
-            pFrame+="i:$pF_index|x:$pF_index_X|y:$pF_index_Y"
+            AddToFrame "i:$pF_index|x:$pF_index_X|y:$pF_index_Y"
         fi
 
         if [[ "$pF_index" -lt "0" ]]
@@ -142,39 +146,39 @@ function CreateGameChunk { #PrintFrame3
                 equal=$((pF_index % 2))
                 if [[ "$equal" == "0" ]]
                 then
-                    pFrame+="$OOM2"
+                    AddToFrame "$OOM2"
                 else
-                    pFrame+="$OOM1"
+                    AddToFrame "$OOM1"
                 fi
             else
                 equal=$((pF_index % 2))
                 if [[ "$equal" == "0" ]]
                 then
-                    pFrame+="$OOM1"
+                    AddToFrame "$OOM1"
                 else
-                    pFrame+="$OOM2"
+                    AddToFrame "$OOM2"
                 fi
             fi
     
         else
             if [[ "$pF_index" == "$PlayerTileIndexL" ]] && [[ "$IsLeftHand" == "1" ]]
             then
-                pFrame+="$LeftHand"
+                AddToFrame "$LeftHand"
             elif [[ "$pF_index" == "$PlayerTileIndexR" ]] && [[ "$IsRightHand" == "1" ]]
             then
-                pFrame+="$RightHand"
+                AddToFrame "$RightHand"
             elif [[ "$pF_index" == "$AimPos" ]] && [[ "$CurrentWeapon" == "2" ]]
             then
-                pFrame+="-"
+                AddToFrame "-"
             elif [[ "$pF_index" == "$AimPos" ]] && [[ "$is_debug" == "2" ]]
             then
-                pFrame+="."
+                AddToFrame "."
             else
                 if [[ "${aBomb[$pF_index]}" == "1" ]]
                 then
-                    pFrame+="$bomb"
+                    AddToFrame "$bomb"
                 else
-                    pFrame+="${world[$pF_index]}"
+                    AddToFrame "${world[$pF_index]}"
                 fi
             fi
         fi
