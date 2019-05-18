@@ -5,6 +5,74 @@
 
 render_mode="3"
 
+function PrintFrame {
+    # rendering the frames from a file is much faster but it is not 100% done yet
+    if [[ "$render_mode" == "4" ]]
+    then
+        FileMapRender
+    else # render mode 3 (chunks)
+        pFrame=""
+        PrintTopHUD
+        CreateGameChunk
+        PrintBotHUD
+        clear
+        printf "$pFrame"
+    fi
+}
+
+function CreateHPstr {
+    local i
+    hp_str="["
+    for ((i=0;i<bhp;i++)) do
+        if [[ "$i" -lt "$hp" ]]
+        then
+            hp_str+="+"
+        else
+            hp_str+=" "
+        fi
+    done
+    hp_str+="]"
+}
+
+function PrintTopHUD {
+    if [[ "$IsHUD" == "1" ]]
+    then
+        #rand=$(( $RANDOM % 10 + 60 ))
+        #pFrame+="fps: $rand\n\n"
+        pFrame+="tick: $TotalTicks\n"
+    fi
+}
+
+function PrintBotHUD {
+#    echo ""
+#    echo "pos:  $posX|$posY"
+#    echo "world: $world_sizeX x $world_sizeY tiles $world_tiles"
+#    echo "render distance: $render_dist"
+#    echo "<debug> f $p_from t $p_to pindex $PlayerTileIndex"
+#    echo "'t' test 'o' options 'x' eXit 'w''a''s''d' move"
+
+    if [[ "$IsHUD" == "1" ]]
+    then
+        pFrame+="\n"
+        pFrame+="pos:  $posX|$posY pindex: $PlayerTileIndex \n"
+        pFrame+="world: $world_sizeX x $world_sizeY tiles $world_tiles\n"
+        pFrame+="AimPos: $AimPos AimDirX: $AimDir AimDirY: $AimDirY\n"
+        pFrame+="network: $NetRead netcatsupport: $IsNcSupport\n"
+        #pFrame+="bot[0] Alive: ${aBotAlive[0]} \n"
+        #pFrame+="IsLeftHand: $IsLeftHand IsRightHand: $IsRightHand"
+        #pFrame+="render distance: $render_dist\n"
+        #pFrame+="AimDir: $AimDir \n"
+        #pFrame+="IsGrounded: $IsGrounded AliveBullets: $AliveBullets \n"
+    elif [[ "$IsHUD" == "2" ]]
+    then
+        CreateHPstr
+        pFrame+="\n"
+        pFrame+="$hp_str \n"
+        pFrame+="gold: $gold blocks: $blocks\n"
+    fi
+    PrintChat $ShowFullChat
+}
+
 # not finished yet (features missing) but performance seems way better
 function FileMapRender { #PrintFrame4
     local x
