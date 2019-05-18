@@ -209,7 +209,7 @@ function GetHigherIndex_Y {
     local paraX=$1
     local paraY=$2
     local paraY=$((paraY + 1))
-    GetTileIndex $paraX $paraY
+    GetTileIndex "$paraX" "$paraY"
     HigherIndex_Y=$((TileIndex))
 }
 
@@ -219,7 +219,7 @@ function GetLowerIndex_Y {
     local paraX=$1
     local paraY=$2
     local paraY=$((paraY - 1))
-    GetTileIndex $paraX $paraY
+    GetTileIndex "$paraX" "$paraY"
     LowerIndex_Y=$((TileIndex))
 }
 
@@ -354,8 +354,8 @@ function SwapHands {
 function CheckNewX {
     local NewX
     NewX=$1
-    GetTileIndex $NewX $posY
-    CheckCollision $TileIndex
+    GetTileIndex "$NewX" "$posY"
+    CheckCollision "$TileIndex"
     if [[ "$is_collision" == "1" ]]
     then
         return
@@ -395,11 +395,11 @@ function GetAimPos { #TODO: if aim is out of world (left side) it aims at world 
         AimPos=$((PlayerTileIndex + AimDir))
     elif [[ "$AimDirY" == "-1" ]]
     then
-        GetHigherIndex_Y $PlayerTileIndex
+        GetHigherIndex_Y "$PlayerTileIndex"
         AimPos=$((HigherIndex_Y + AimDir))
     elif [[ "$AimDirY" == "1" ]]
     then
-        GetLowerIndex_Y $PlayerTileIndex
+        GetLowerIndex_Y "$PlayerTileIndex"
         AimPos=$((LowerIndex_Y + AimDir))
     fi
 }
@@ -423,8 +423,8 @@ function GameTick {
         GameLogic
         SetPlayer
         BotTick
-        CollectGold $PlayerTileIndex
-        CollectShield $PlayerTileIndex
+        CollectGold "$PlayerTileIndex"
+        CollectShield "$PlayerTileIndex"
         PrintFrame
         let "TotalTicks++"
     done
@@ -440,7 +440,7 @@ function SlowTick {
 function SetPlayer {
     #GetTileIndex $posX $posY
     #world[$TileIndex]="$skin"
-    SetTileXY $posX $posY $skin
+    SetTileXY "$posX" "$posY" "$skin"
     PlayerTileIndex=$TileIndex
     PlayerTileIndexL=$((PlayerTileIndex - 1))
     PlayerTileIndexR=$((PlayerTileIndex + 1))
@@ -464,14 +464,14 @@ function SetTileXY {
     #parameter 1=X
     #parameter 2=Y
     #parameter 3=Value
-    GetTileIndex $1 $2
-    SetTileSave $TileIndex $3
+    GetTileIndex "$1" "$2"
+    SetTileSave "$TileIndex" "$3"
 }
 
 function SetTileIndex {
     #parameter 1=Index
     #parameter 2=Value
-    SetTileSave $1 $2
+    SetTileSave "$1" "$2"
 }
 
 function SetTileSave {
@@ -498,7 +498,7 @@ function SetTileSave {
 #
 #read -n 1 -s -p ""
 
-SetArgs $1
+SetArgs "$1"
 CreateWorld
 GameTick
 
