@@ -39,6 +39,10 @@ function NetTick() {
 
 # called in main thread tick function
 function ReadNetworkTick() {
+  if [ ! -f .chidraqul_tmp/client.recv ]
+  then
+    return
+  fi
   # NetRead=$(cat .chidraqul_tmp/client.recv)
   NetRead=$(grep "." .chidraqul_tmp/client.recv | tail -1)
 }
