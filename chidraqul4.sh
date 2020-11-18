@@ -237,7 +237,7 @@ function GetTileIndexSave { #dropping weird errors
     if [[ "$paraX" -lt "0" ]] || [[ "$paraX" -gt "$world_sizeXm" ]]
     then
         return
-    elif [[ "$paraY" -lt "0" ]] || [[ "$paraY" -gt "$world_sizeYm" ]]
+    elif [[ "$paraY" -lt "0" ]] || [[ "$paraY" -gt "$world_sizeYm" ]]
     then
         return
     fi
@@ -359,7 +359,7 @@ function GameTick {
         CollectGold "$PlayerTileIndex"
         CollectShield "$PlayerTileIndex"
         PrintFrame
-        let "TotalTicks++"
+        TotalTicks="$((TotalTicks + 1))"
     done
 }
 
