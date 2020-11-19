@@ -14,7 +14,7 @@ function AddBomb { #TODO: maybe check if there is a bomb already to avoid double
     local x=$1
     local y=$2
     local i
-    let "TotalBombs++"
+    TotalBombs=$((TotalBombs + 1))
     for ((i=0;i<=TotalBombs;i++)) do
         if [[ "${aBombTick[$i]}" -gt "0" ]]
         then
@@ -23,7 +23,7 @@ function AddBomb { #TODO: maybe check if there is a bomb already to avoid double
             aBombTick[$i]=5
             aBombX[$i]=$x
             aBombY[$i]=$y
-            GetTileIndex $x $y
+            GetTileIndex "$x" "$y"
             aBomb[$TileIndex]=1
             SendChat "add bomb[$i] at x=$x y=$y"
         fi
@@ -32,7 +32,7 @@ function AddBomb { #TODO: maybe check if there is a bomb already to avoid double
 
 function DeleteBomb {
     local index=$1
-    GetTileIndex ${aBombX[$index]} ${aBombY[$index]}
+    GetTileIndex "${aBombX[$index]}" "${aBombY[$index]}"
     aBomb[$TileIndex]=0
     return
 }
@@ -43,11 +43,11 @@ function BombTick {
         if [[ "${aBombTick[$i]}" -gt "0" ]]
         then
             #SendChat "bomb[$i] tickntick=${aBombTick[$i]}"
-            aBombTick[$i]=$((aBombTick[$i] - 1))
+            aBombTick[$i]=$((aBombTick[i] - 1))
             if [[ "${aBombTick[$i]}" == "0" ]]
             then
-                Explode ${aBombX[$i]} ${aBombY[$i]} 2
-                DeleteBomb $i
+                Explode "${aBombX[$i]}" "${aBombY[$i]}" 2
+                DeleteBomb "$i"
                 #SendChat "EXPLOOOOOOOODE"
             fi
         fi
@@ -59,7 +59,7 @@ function AddSmoke { #TODO: add clear smoke (best would be with delay and or effe
     local y=$2
     local r=$3 #radius
     local m #middle
-    GetTileIndex $x $y
+    GetTileIndex "$x" "$y"
     m=$TileIndex
     local i
     local startX=$((x - r * 2))
@@ -75,15 +75,15 @@ function AddSmoke { #TODO: add clear smoke (best would be with delay and or effe
     #SendChat "[exp] startX: $startX startY: $startY ttotal: $exp_tiles"
 
     for ((i=0;i<=exp_tiles;i++)) do
-        let "pX++"
+        pX=$((pX + 1))
         if [[ "$tile_counterX" -gt "$size_x" ]]
         then
             tile_counterX=0
             pX=$startX
-            let "pY++"
+            pY=$((pY + 1))
         fi
-        let "tile_counterX++"
-        GetTileIndex $pX $pY
+        tile_counterX=$((tile_counterX + 1))
+        GetTileIndex "$pX" "$pY"
         pI=$TileIndex
 
         if [[ "$pI" -gt "-1" ]] #TODO: also add check for maximum tile index (also in render.sh)
@@ -100,7 +100,7 @@ function Explode {
     local y=$2
     local r=$3 #radius
     local m #middle
-    GetTileIndex $x $y
+    GetTileIndex "$x" "$y"
     m=$TileIndex
     local i
     local startX=$((x - r * 2))
@@ -116,23 +116,23 @@ function Explode {
     #SendChat "[exp] startX: $startX startY: $startY ttotal: $exp_tiles"
 
     for ((i=0;i<=exp_tiles;i++)) do
-        let "pX++"
+        pX=$((pX + 1))
         if [[ "$tile_counterX" -gt "$size_x" ]]
         then
             tile_counterX=0
             pX=$startX
-            let "pY++"
+            pY=$((pY + 1))
         fi
-        let "tile_counterX++"
-        GetTileIndex $pX $pY
+        tile_counterX=$((tile_counterX + 1))
+        GetTileIndex "$pX" "$pY"
         pI=$TileIndex
 
         if [[ "$pI" -gt "-1" ]] #TODO: also add check for maximum tile index (also in render.sh)
         then
             #also explode out of map since DamageBlock does the check for us
-            DamageBlock $pI 20
+            DamageBlock "$pI" 20
             #SendChat "damage index $pI"
         fi
     done
-    AddSmoke $x $y $r
+    AddSmoke "$x" "$y" "$r"
 }

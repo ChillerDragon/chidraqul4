@@ -8,7 +8,7 @@ function BotTick {
     for ((i=0;i<MAX_BOTS;i++)) do
         if [[ "${aBotAlive[$i]}" == "1" ]]
         then
-            MoveBot
+            MoveBot "$i"
         fi
     done
 }
@@ -19,7 +19,7 @@ function BotStatus {
     for ((i=0;i<MAX_BOTS;i++)) do
         echo "bot[$i] Alive:${aBotAlive[$i]} Index:${aBotIndex[$i]}"
     done
-    read -n 1 -s -p ""
+    read -r -n 1 -s -p ""
 }
 
 function AddBot {
@@ -41,14 +41,14 @@ function KillBot {
     local id
     id=$1
     aBotAlive[$id]=0
-    SetGold ${aBotIndex[$id]}
+    SetGold "${aBotIndex[$id]}"
 }
 
 function MoveBot {
     local id
     local mov
-    #mov=$(( $RANDOM % 2 - 1 ))
-    let "BotWalked++"
+    #mov=$(( RANDOM % 2 - 1 ))
+    BotWalked=$((BotWalked + 1))
     if [[ "$BotWalked" -gt "6" ]]
     then
         if [[ "$BotDir" == "1" ]]

@@ -15,10 +15,10 @@ world_floor="_"
 
 function SpawnGold {
     local Ymax=$(( world_sizeYm - 4 ))
-    local rand_x=$(( $RANDOM % world_sizeXm ))
-    local rand_y=$(( $RANDOM % 5 + Ymax ))
-    GetTileIndex $rand_x $rand_y
-    SetGold $TileIndex
+    local rand_x=$(( RANDOM % world_sizeXm ))
+    local rand_y=$(( RANDOM % 5 + Ymax ))
+    GetTileIndex "$rand_x" "$rand_y"
+    SetGold "$TileIndex"
 }
 
 function DeleteWorld {
@@ -39,31 +39,31 @@ function GenerateTiles {
     local x
     local y
     local line_y=$(( world_sizeY / 2 ))
-    local line_y_dir=$(( $RANDOM % 3 ))
+    local line_y_dir=$(( RANDOM % 3 ))
     local is_change=0
     local r=0
     for ((x=0;x<world_sizeX;x++)) do
         print_dbg "[$x/$world_sizeX] y: $line_y"
-        line_y_dir=$(( $RANDOM % 3 - 1 ))
-        is_change=$(( $RANDOM % 2 ))
+        line_y_dir=$(( RANDOM % 3 - 1 ))
+        is_change=$(( RANDOM % 2 ))
         if [[ "$is_change" == "1" ]]
         then
             line_y=$(( line_y + line_y_dir ))
         fi
         for ((y=0;y<world_sizeY;y++)) do
-            GetTileIndex $x $y
+            GetTileIndex "$x" "$y"
             if [[ "$line_y" -lt "$y" ]]
             then
-                SetBlock $TileIndex
+                SetBlock "$TileIndex"
             elif [[ "$line_y" == "$y" ]] #top line on the world
             then
-                r=$(( $RANDOM % 15 ))
+                r=$(( RANDOM % 15 ))
                 if [[ "$r" == "1" ]]
                 then
-                    SetShield $TileIndex
+                    SetShield "$TileIndex"
                 elif [[ "$r" -gt "10" ]]
                 then
-                    SetGold $TileIndex
+                    SetGold "$TileIndex"
                 fi
             fi
         done
@@ -76,7 +76,7 @@ function SaveWorldToFile {
         printf "" > .chidraqul_tmp/world.txt
         local i
         local mod
-        GetTileIndex $posX $posY
+        GetTileIndex "$posX" "$posY"
         world[$TileIndex]=" "
         for ((i=0;i<=world_tiles;i++)) do
             mod=$((i % world_sizeX))
@@ -84,7 +84,7 @@ function SaveWorldToFile {
             then
                 printf '\n' >> .chidraqul_tmp/world.txt
             else
-                printf "${world[$i]}" >> .chidraqul_tmp/world.txt
+                printf "%s" "${world[$i]}" >> .chidraqul_tmp/world.txt
             fi
         done
     fi
@@ -118,28 +118,28 @@ function CreateWorld {
 function CreateRandStuff { #TODO: old block and money creation (bad)
     local x
     local y
-    local RandShieldX=$(( $RANDOM % world_sizeXm ))
+    local RandShieldX=$(( RANDOM % world_sizeXm ))
     for ((y=0;y<world_sizeY;y++)) do
         if [[ "$y" -lt "10" ]]
         then
             if [[ "$y" == "9" ]]
             then
-                GetTileIndex $RandShieldX $y
-                SetShield $TileIndex
+                GetTileIndex "$RandShieldX" "$y"
+                SetShield "$TileIndex"
             fi
         else
             for ((x=0;x<world_sizeX;x++)) do
-                local r=$(( $RANDOM % 12 ))
+                local r=$(( RANDOM % 12 ))
                 if [[ "$r" -gt "2" ]]
                 then
-                    GetTileIndex $x $y
-                    SetBlock $TileIndex
-                    GetLowerIndex_Y $TileIndex
+                    GetTileIndex "$x" "$y"
+                    SetBlock "$TileIndex"
+                    GetLowerIndex_Y "$TileIndex"
                     if [[ "${world[$LowerIndex_Y]}" == "_" ]]
                     then
                         if [[ "$r" -gt "5" ]]
                         then
-                            SetGold $LowerIndex_Y
+                            SetGold "$LowerIndex_Y"
                         fi
                     fi
                 fi

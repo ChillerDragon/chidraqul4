@@ -56,7 +56,7 @@ function NextOption {
 
 function OptionsInput {
     local inp
-    read -n 1 -s -p "" inp
+    read -n 1 -r -s -p "" inp
     if [[ "$inp" == "w" ]]; then
         PrevOption
     elif [[ "$inp" == "s" ]]; then
@@ -83,11 +83,11 @@ AddOption "multiplayer" ConMultiplayer
 AddOption "quit" ConQuit
 
 function ConRenderdist {
-    read -p "Renderdistance: " render_dist
+    read -r -p "Renderdistance: " render_dist
 }
 
 function ConRenderMode {
-    read -p "Render Mode 3=chunk 4=file q=quit: " render_mode
+    read -r -p "Render Mode 3=chunk 4=file q=quit: " render_mode
     if [[ "$render_mode" == "q" ]]
     then
         OptionsMain
@@ -101,7 +101,7 @@ function ConRenderMode {
 
 function ConUsername {
     # UsernameMain
-    read -p "Username: " username
+    read -r -p "Username: " username
 }
 
 function ConMultiplayer {
@@ -111,8 +111,8 @@ function ConMultiplayer {
     SendChat "netcat is wrong version or not installed"
     return
   fi
-  read -p "server ip: " server_ip
-  ConnectToServer $server_ip
+  read -r -p "server ip: " server_ip
+  ConnectToServer "$server_ip"
 }
 
 function ConQuit {

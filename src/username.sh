@@ -20,7 +20,7 @@ function UsernamePrint {
     printf "|$pUsername"
 
 
-    for ((i=$UsernameLen;i<MaxUsernameLen;i++))
+    for ((i=UsernameLen;i<MaxUsernameLen;i++))
     do
         printf " "
     done
@@ -38,7 +38,7 @@ function UsernamePrint {
 function UsernameInp {
     local inp
     tput cup 1 $UsernameLen
-    read -n 1 -p "" inp
+    read -n 1 -r -p "" inp
     if [ "$inp" == $'^?' ]
     then
         pUsername=""

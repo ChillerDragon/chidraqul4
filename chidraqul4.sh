@@ -141,7 +141,7 @@ function UpdatePosHistory {
     local next
     local i
     # Time based history
-    for ((i=$history_len;i>0;i--)) do
+    for ((i=history_len;i>0;i--)) do
         next=$((i - 1))
         aPrevPosTime[$i]=${aPrevPosTime[$next]}
     done
@@ -151,7 +151,7 @@ function UpdatePosHistory {
     then
         return
     fi
-    for ((i=$history_len;i>0;i--)) do
+    for ((i=history_len;i>0;i--)) do
         next=$((i - 1))
         aPrevPos[$i]=${aPrevPos[$next]}
         #printf "${aPrevPos[$i]}[$i] <- ${aPrevPos[$next]}[$next] \n" #debug delete me
@@ -168,7 +168,7 @@ function ShowHistory {
     done
 
 
-    read -n 1 -s -p ""
+    read -n 1 -r -s -p ""
 }
 
 function damage {
@@ -195,7 +195,7 @@ function GameOver {
     echo ""
     echo "GAME OVER"
     echo ""
-    read -n 1 -s -p ""
+    read -n 1 -r -s -p ""
 
     die
     skin="#"

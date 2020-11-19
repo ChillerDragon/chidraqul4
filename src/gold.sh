@@ -16,7 +16,7 @@ function SetGold {
 function CollectGold {
     if [[ "${aGold[$1]}" == "1" ]]
     then
-        let "gold++"
+        gold=$((gold + 1))
         SendChat "[+] collected gold \$\$\$"
         aGold[$1]=0
         SaveWorldToFile

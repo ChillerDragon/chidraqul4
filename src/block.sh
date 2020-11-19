@@ -11,13 +11,13 @@ is_block=0
 function DamageBlock {
     local index=$1
     local dmg=$2
-    IsBlock $index
+    IsBlock "$index"
     if [[ "$is_block" == "1" ]]
     then
-        aBlockHP[$index]=$((aBlockHP[$index] - dmg))
+        aBlockHP[$index]=$((aBlockHP[index] - dmg))
         if [[ "${aBlockHP[$index]}" -lt "1" ]]
         then
-            let "blocks++"
+            blocks=$((blocks + 1))
             aBlock[$index]=0
             world[$index]="$world_air"
             SaveWorldToFile
