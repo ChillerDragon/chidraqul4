@@ -55,7 +55,6 @@ posY=0
 spawnX=0
 spawnY=0
 skin="#"
-kill_skin="a"
 render_dist=6
 is_debug=0
 IsHUD=2

@@ -70,14 +70,6 @@ function KeyPresses {
             fi
             #local r=$((PlayerTileIndex + AimDir))
             #Explode $posX $posY 2
-#            if [ "$skin" = "#" ]
-#            then
-#                skin="a"
-#                kill_skin="#"
-#            else
-#                skin="#"
-#                kill_skin="a"
-#            fi
         elif [ "$input" = "0" ]; then
             CurrentWeapon=0
         elif [ "$input" = "1" ]; then
